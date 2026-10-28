@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>y.geye | Private Luxury Store (INR ₹)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .font-serif-lux { font-family: 'Cormorant Garamond', serif; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-up { animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes kenBurnsReel {
+      0% { transform: scale(1) translate(0, 0); }
+      50% { transform: scale(1.12) translate(-1.5%, -1%); }
+      100% { transform: scale(1) translate(0, 0); }
+    }
+    .animate-kenburns { animation: kenBurnsReel 14s ease-in-out infinite; }
+    @keyframes progressSweep {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+    .reel-progress-active { animation: progressSweep 6s linear forwards; }
+  </style>
+</head>
+<body class="bg-[#EAEDED] text-slate-900 min-h-screen flex flex-col selection:bg-amber-200 selection:text-slate-950 pb-16 md:pb-0">
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-16 md:bottom-6 right-0 left-0 md:left-auto md:right-6 z-[100] flex flex-col gap-2 max-w-sm w-full mx-auto md:mx-0 pointer-events-none px-3 sm:px-0"></div>
+
+  <!-- VIP PASSCODE GATE MODAL -->
+  <div id="gateModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 p-7 sm:p-10 rounded-3xl shadow-2xl text-center text-white relative overflow-hidden animate-slide-up">
+      <div class="relative z-10">
+        <div class="inline-flex items-center justify-center px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] font-semibold tracking-widest uppercase mb-4">
+          <i class="fa-solid fa-crown mr-1.5 text-[10px]"></i> VIP Invite Only
+        </div>
+        <h1 class="font-serif-lux text-5xl font-bold tracking-tight text-white mb-1">y.geye</h1>
+        <p class="text-slate-400 text-[10px] uppercase tracking-[0.25em] mb-5">Private Store & Marketplace</p>
+        <p class="text-slate-400 text-xs sm:text-sm mb-6 leading-relaxed">
+          Enter your private invitation key (<code class="text-amber-300">vip2026</code>) below to unlock all deals & complimentary gifts.
+        </p>
+        <form onsubmit="event.preventDefault(); unlockWithKey();" class="space-y-3">
+          <input
+            id="gateKeyInput"
+            type="password"
+            placeholder="Enter VIP Key (vip2026)"
+            class="w-full px-4 py-3.5 bg-slate-950 border border-slate-700 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 text-center tracking-widest text-base font-mono"
+          />
+          <button
+            type="submit"
+            class="w-full py-3.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold rounded-2xl transition shadow-lg text-sm"
+          >
+            Unlock y.geye Store →
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT QUICK-VIEW MODAL POPUP -->
+  <div id="quickViewModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/60 backdrop-blur-sm">
+    <div id="quickViewContent" class="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 animate-slide-up grid grid-cols-1 md:grid-cols-2"></div>
+  </div>
+
+  <!-- ORDER CONFIRMATION POPUP MODAL -->
+  <div id="orderSuccessModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 text-center shadow-2xl border border-slate-100 animate-slide-up">
+      <div class="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-3 text-2xl">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <span class="text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">Order Confirmed</span>
+      <h3 class="font-serif-lux text-2xl sm:text-3xl font-bold text-slate-900 mt-2">Thank You for Your Order</h3>
+      <p id="orderSuccessId" class="text-xs font-mono text-slate-500 mt-1 mb-4">Order #YGEYE-000000</p>
+      <div id="orderSuccessSummary" class="bg-slate-50 rounded-2xl p-4 text-left text-xs space-y-2 border border-slate-200/70 mb-5"></div>
+      <button onclick="closeOrderSuccessModal()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl transition text-xs sm:text-sm">
+        Continue Shopping on y.geye
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN STOREFRONT -->
+  <div id="mainApp" class="hidden flex-1 flex flex-col">
+
+    <!-- COMPACT AMAZON-STYLE DARK HEADER + SEARCH + CATEGORY STRIP -->
+    <header class="sticky top-0 z-30 bg-[#131921] text-white shadow-md">
+      <!-- Top Bar -->
+      <div class="max-w-[1440px] mx-auto px-2.5 sm:px-4 h-12 sm:h-14 flex items-center justify-between gap-2 sm:gap-4">
+        <!-- Brand Logo -->
+        <a href="/?key=vip2026" class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-serif-lux font-bold text-xl leading-none">
+            y.
+          </div>
+          <div class="leading-tight">
+            <span class="font-serif-lux font-bold text-xl sm:text-2xl tracking-tight text-white block leading-none">y.geye</span>
+            <span class="text-[8px] sm:text-[9px] text-amber-400 font-bold uppercase tracking-widest block">prime vip</span>
+          </div>
+        </a>
+
+        <!-- Unified Compact Search Bar (Always visible on mobile & desktop like Amazon) -->
+        <div class="flex-1 max-w-2xl mx-1 sm:mx-3">
+          <div class="relative flex items-center w-full h-8 sm:h-9 rounded-lg overflow-hidden bg-white shadow-inner focus-within:ring-2 focus-within:ring-amber-400">
+            <input
+              id="searchInput"
+              type="text"
+              oninput="syncSearch(this.value)"
+              placeholder="Search y.geye.in — watches, free gifts, audio..."
+              class="w-full h-full pl-3 pr-9 text-xs text-slate-900 placeholder-slate-400 focus:outline-none"
+            />
+            <button onclick="renderProducts()" class="h-full px-3 bg-amber-400 hover:bg-amber-500 text-slate-950 flex items-center justify-center transition">
+              <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Quick Icons -->
+        <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <button onclick="openSavedDrawer()" class="relative px-2 sm:px-2.5 py-1.5 rounded-lg hover:bg-white/10 text-white transition flex items-center gap-1 text-xs" title="Saved for Later">
+            <i class="fa-regular fa-bookmark text-amber-400 text-xs sm:text-sm"></i>
+            <span class="hidden lg:inline text-[11px] font-semibold">Saved</span>
+            <span id="savedHeaderCount" class="bg-slate-700 text-amber-300 text-[10px] font-bold rounded-full px-1.5 min-w-[16px] text-center">0</span>
+          </button>
+
+          <a href="/admin.html" class="px-2 sm:px-2.5 py-1.5 rounded-lg hover:bg-white/10 text-slate-200 hover:text-white transition flex items-center gap-1 text-[11px] font-semibold" title="Admin Studio">
+            <i class="fa-solid fa-sliders text-amber-400 text-xs"></i>
+            <span class="hidden sm:inline">Admin</span>
+          </a>
+
+          <button onclick="toggleCart(true)" class="relative px-2.5 sm:px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 transition flex items-center gap-1.5 text-xs font-extrabold">
+            <i class="fa-solid fa-cart-shopping text-xs sm:text-sm"></i>
+            <span id="cartCount" class="text-[11px] font-black">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sub-Navigation Category Strip (Amazon-style horizontal scrollable bar) -->
+      <div class="bg-[#232F3E] text-white border-t border-white/10">
+        <div id="categoryFilterBar" class="max-w-[1440px] mx-auto px-2 sm:px-4 h-9 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar text-[11px] font-medium">
+          <button onclick="setCategory('All')" data-cat="All" class="cat-btn whitespace-nowrap px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-bold transition flex-shrink-0">All Deals</button>
+          <button onclick="setCategory('Free Gifts')" data-cat="Free Gifts" class="cat-btn whitespace-nowrap px-2.5 py-1 rounded hover:bg-white/10 text-amber-300 font-semibold transition flex-shrink-0">🎁 Free VIP Gifts</button>
+          <button onclick="setCategory('Saved')" data-cat="Saved" class="cat-btn whitespace-nowrap px-2.5 py-1 rounded hover:bg-white/10 text-white transition flex-shrink-0">🔖 Saved (<span id="savedFilterCount">0</span>)</button>
+          <button onclick="setCategory('Timepieces')" data-cat="Timepieces" class="cat-btn whitespace-nowrap px-2.5 py-1 rounded hover:bg-white/10 text-white transition flex-shrink-0">Timepieces</button>
+          <button onclick="setCategory('Electronics')" data-cat="Electronics" class="cat-btn whitespace-nowrap px-2.5 py-1 rounded hover:bg-white/10 text-white transition flex-shrink-0">Electronics</button>
+          <button onclick="setCategory('Accessories')" data-cat="Accessories" class="cat-btn whitespace-nowrap px-2.5 py-1 rounded hover:bg-white/10 text-white transition flex-shrink-0">Accessories</button>
+          <button onclick="setCategory('Fragrances')" data-cat="Fragrances" class="cat-btn whitespace-nowrap px-2.5 py-1 rounded hover:bg-white/10 text-white transition flex-shrink-0">Fragrances</button>
+          <button onclick="setCategory('Lifestyle')" data-cat="Lifestyle" class="cat-btn whitespace-nowrap px-2.5 py-1 rounded hover:bg-white/10 text-white transition flex-shrink-0">Home & Coffee</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- CINEMATIC QUALITY SHOWCASE VIDEO HEADER (Desktop & Mobile Responsive) -->
+    <section id="videoHeroSection" class="max-w-[1440px] mx-auto px-2 sm:px-4 pt-2.5 sm:pt-3.5 w-full">
+      <div class="relative rounded-2xl overflow-hidden bg-slate-950 shadow-lg border border-slate-800/80 h-[220px] sm:h-[290px] lg:h-[330px] flex items-center">
+        <!-- Top Story Reel Progress Bars (Instagram/Luxury Reel Style) -->
+        <div class="absolute top-2.5 left-4 right-4 z-20 grid grid-cols-3 gap-1.5">
+          <div class="h-1 rounded-full bg-white/25 overflow-hidden"><div id="reelBar0" class="h-full bg-amber-400 w-0"></div></div>
+          <div class="h-1 rounded-full bg-white/25 overflow-hidden"><div id="reelBar1" class="h-full bg-amber-400 w-0"></div></div>
+          <div class="h-1 rounded-full bg-white/25 overflow-hidden"><div id="reelBar2" class="h-full bg-amber-400 w-0"></div></div>
+        </div>
+
+        <!-- Animated Ken-Burns Luxury Backdrop Layer (Always in motion even while video buffers) -->
+        <img
+          id="heroAnimatedBackdrop"
+          src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1400&auto=format&fit=crop&q=80"
+          alt="y.geye Luxury Reel"
+          class="absolute inset-0 w-full h-full object-cover opacity-55 animate-kenburns"
+        />
+
+        <!-- Autoplay Loop HD Video Background (Direct HTML5 MP4 Stream) -->
+        <video
+          id="heroShowcaseVideo"
+          src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+          webkit-playsinline
+          preload="auto"
+          class="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-lighten pointer-events-none"
+        ></video>
+
+        <!-- Dark Luxury Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/75 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-slate-950/30"></div>
+
+        <!-- Left Editorial Overlay Content -->
+        <div class="relative z-10 px-4 sm:px-8 max-w-xl text-white mt-2">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest mb-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
+            <span id="videoStoryTag">LIVE REEL • 100% Authentic Craftsmanship</span>
+          </div>
+          <h1 id="videoStoryTitle" class="font-serif-lux text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight text-white">
+            The Art of <span class="italic text-amber-300 font-normal">y.geye</span> Luxury
+          </h1>
+          <p id="videoStoryDesc" class="text-[11px] sm:text-xs text-slate-200 mt-1 sm:mt-1.5 line-clamp-2 max-w-md leading-relaxed">
+            Every piece is hand-inspected for precision, material purity, and timeless finish—delivered directly to our private invitees with complimentary VIP gifts.
+          </p>
+
+          <!-- Video Action & Story Switcher Pills -->
+          <div class="mt-3 sm:mt-4 flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <button onclick="setCategory('Free Gifts')" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-[10px] sm:text-xs shadow-md transition flex items-center gap-1.5">
+              <i class="fa-solid fa-gift"></i> Claim Free VIP Gift
+            </button>
+            <button onclick="switchHeroVideo(0, true)" id="vidTab0" class="vid-pill px-2.5 py-1.5 rounded-xl bg-white/20 text-white border border-amber-400 text-[9px] sm:text-[10px] font-bold backdrop-blur-md transition">
+              <i class="fa-solid fa-play mr-1 text-amber-300"></i> 1. Horology
+            </button>
+            <button onclick="switchHeroVideo(1, true)" id="vidTab1" class="vid-pill px-2.5 py-1.5 rounded-xl bg-black/40 hover:bg-white/15 text-slate-200 border border-white/15 text-[9px] sm:text-[10px] font-semibold backdrop-blur-md transition">
+              <i class="fa-solid fa-play mr-1 text-amber-300"></i> 2. Leather & Style
+            </button>
+            <button onclick="switchHeroVideo(2, true)" id="vidTab2" class="vid-pill px-2.5 py-1.5 rounded-xl bg-black/40 hover:bg-white/15 text-slate-200 border border-white/15 text-[9px] sm:text-[10px] font-semibold backdrop-blur-md transition">
+              <i class="fa-solid fa-play mr-1 text-amber-300"></i> 3. VIP Unboxing
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Interactive Floating Product Card inside the Video Reel (Desktop & Tablet) -->
+        <div id="reelFloatingProduct" onclick="openQuickView('prod_1')" class="hidden md:flex items-center gap-3 absolute right-6 top-1/2 -translate-y-1/2 z-10 bg-slate-900/85 hover:bg-slate-900 backdrop-blur-xl border border-white/15 p-3 rounded-2xl shadow-2xl cursor-pointer transition group w-64">
+          <img id="reelFloatImg" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&auto=format&fit=crop&q=80" class="w-14 h-14 rounded-xl object-cover border border-amber-400/40 group-hover:scale-105 transition" />
+          <div class="min-w-0 flex-1">
+            <span class="text-[9px] text-amber-400 font-bold uppercase tracking-wider block">Featured in Reel</span>
+            <h4 id="reelFloatName" class="text-xs font-bold text-white truncate">Obsidian Chrono 41mm</h4>
+            <div class="flex items-center justify-between mt-1">
+              <span id="reelFloatPrice" class="text-xs font-extrabold text-emerald-400">₹28,500</span>
+              <span class="text-[10px] text-slate-300 group-hover:text-amber-300 font-semibold">View →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom-Right Floating Play/Pause & Status Controls -->
+        <div class="absolute bottom-3 right-3 z-10 flex items-center gap-1.5">
+          <button onclick="toggleVideoPlay()" id="videoPlayBtn" class="w-8 h-8 rounded-full bg-slate-950/85 hover:bg-amber-400 text-white hover:text-slate-950 border border-white/25 flex items-center justify-center text-xs transition backdrop-blur-md" title="Play / Pause Reel">
+            <i class="fa-solid fa-pause"></i>
+          </button>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-950/80 border border-white/15 text-[9px] sm:text-[10px] text-amber-300 font-semibold backdrop-blur-md">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> HD Quality Reel
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- AMAZON-STYLE TOP BENTO SHOWCASE (Multi-item 2x2 Quadrant Cards + Promo Banner) -->
+    <section id="bentoShowcaseSection" class="max-w-[1440px] mx-auto px-2 sm:px-4 pt-2.5 sm:pt-4 w-full">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5">
+
+        <!-- Box 1: Exclusively For You Promo Card -->
+        <div class="bg-gradient-to-br from-[#FDE68A] via-[#FCD34D] to-[#F59E0B] rounded-xl p-3 sm:p-4 flex flex-col justify-between shadow-sm relative overflow-hidden min-h-[190px] sm:min-h-[250px]">
+          <div class="relative z-10">
+            <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider bg-slate-950 text-amber-300 px-2 py-0.5 rounded">Exclusively for VIP</span>
+            <h2 class="font-extrabold text-base sm:text-2xl text-slate-950 leading-tight mt-1.5">Up to 60% Off + Free Gifts</h2>
+            <p class="text-[10px] sm:text-xs text-slate-800 mt-1 font-medium">Instant INR (₹) deals & zero delivery fee</p>
+          </div>
+          <div class="relative z-10 mt-2">
+            <button onclick="setCategory('Free Gifts')" class="px-3 py-1.5 bg-slate-950 text-white rounded-lg text-[10px] sm:text-xs font-bold shadow hover:bg-slate-800 transition">
+              Claim Free Gifts →
+            </button>
+          </div>
+          <i class="fa-solid fa-gifts absolute -bottom-3 -right-2 text-6xl sm:text-8xl text-slate-950/10 pointer-events-none"></i>
+        </div>
+
+        <!-- Box 2: 2x2 Quadrant Card — "Claim Free VIP Perks | ₹0" -->
+        <div class="bg-white rounded-xl p-2.5 sm:p-3.5 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-1.5">
+            <h3 class="font-bold text-[11px] sm:text-sm text-slate-900 leading-tight">Free VIP Gifts | ₹0</h3>
+            <button onclick="setCategory('Free Gifts')" class="text-[10px] text-amber-700 font-bold">See all ›</button>
+          </div>
+          <div id="quadFreeGifts" class="grid grid-cols-2 gap-1.5 sm:gap-2 flex-1"></div>
+        </div>
+
+        <!-- Box 3: 2x2 Quadrant Card — "Shop Deals Ending Soon" -->
+        <div class="bg-[#B91C1C] text-white rounded-xl p-2.5 sm:p-3.5 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-1.5">
+            <h3 class="font-bold text-[11px] sm:text-sm text-white leading-tight">Shop deals ending soon</h3>
+            <span class="text-[9px] bg-white text-red-700 font-extrabold px-1.5 py-0.5 rounded">LIVE</span>
+          </div>
+          <div id="quadFlashDeals" class="grid grid-cols-2 gap-1.5 sm:gap-2 flex-1"></div>
+        </div>
+
+        <!-- Box 4: 2x2 Quadrant Card — "Watches & Eyewear" -->
+        <div class="bg-white rounded-xl p-2.5 sm:p-3.5 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-1.5">
+            <h3 class="font-bold text-[11px] sm:text-sm text-slate-900 leading-tight">Watches & Eyewear</h3>
+            <button onclick="setCategory('Timepieces')" class="text-[10px] text-amber-700 font-bold">Explore ›</button>
+          </div>
+          <div id="quadWatches" class="grid grid-cols-2 gap-1.5 sm:gap-2 flex-1"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MAIN COMPACT HIGH-DENSITY PRODUCT CATALOG -->
+    <main class="max-w-[1440px] mx-auto px-2 sm:px-4 py-3 sm:py-5 flex-1 w-full">
+      <!-- Compact Toolbar: Heading + Grid Density Switcher (2-Col / 3-Col on Mobile) + Sort -->
+      <div class="bg-white rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 mb-2.5 sm:mb-4 shadow-sm flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <h2 id="catalogHeading" class="font-bold text-xs sm:text-base text-slate-900">All Featured Products</h2>
+          <span id="totalVisibleBadge" class="text-[10px] bg-slate-100 text-slate-600 font-bold px-2 py-0.5 rounded-full">16 items</span>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2.5">
+          <!-- Mobile Grid Density Switcher: 2 per row vs 3 per row -->
+          <div class="flex items-center bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold">
+            <button id="grid2Btn" onclick="setGridDensity(2)" class="px-2 py-1 rounded bg-white text-slate-900 shadow-sm transition" title="2 Columns">
+              <i class="fa-solid fa-table-cells-large"></i> 2x
+            </button>
+            <button id="grid3Btn" onclick="setGridDensity(3)" class="px-2 py-1 rounded text-slate-500 hover:text-slate-900 transition" title="3 Columns (Ultra Compact)">
+              <i class="fa-solid fa-table-cells"></i> 3x
+            </button>
+          </div>
+
+          <select id="sortSelect" onchange="renderProducts()" class="px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg text-[11px] font-semibold text-slate-700 focus:outline-none">
+            <option value="featured">Sort: Featured</option>
+            <option value="free-first">Free Gifts First</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- High-Density Product Grid (Defaults to 2 cols on mobile, 4 on tablet, 6 on desktop; or 3 cols on mobile when 3x is clicked) -->
+      <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3"></div>
+    </main>
+
+    <!-- Slide-Over Shopping Bag, Saved for Later & Card Checkout Drawer -->
+    <div id="cartDrawer" class="hidden fixed inset-0 z-50 overflow-hidden">
+      <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity" onclick="toggleCart(false)"></div>
+      <div class="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
+        <div class="w-screen max-w-md bg-white shadow-2xl flex flex-col h-full">
+          <!-- Drawer Header -->
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-[#131921] text-white">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-serif-lux font-bold text-base">y.</div>
+              <div>
+                <h2 class="font-bold text-xs sm:text-sm tracking-wide">Your y.geye Bag & Saved</h2>
+                <p class="text-[10px] text-slate-400">Instant INR (₹) Checkout</p>
+              </div>
+            </div>
+            <button onclick="toggleCart(false)" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition text-xs">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- 3-Tab Switcher inside Drawer -->
+          <div class="bg-slate-100 p-1 mx-4 mt-3 rounded-xl grid grid-cols-3 text-[11px] font-bold gap-1">
+            <button id="tabBagBtn" onclick="switchCartStep('bag')" class="py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition truncate px-1">
+              Bag (<span id="drawerBagCount">0</span>)
+            </button>
+            <button id="tabSavedBtn" onclick="switchCartStep('saved')" class="py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition truncate px-1">
+              Saved (<span id="drawerSavedCount">0</span>)
+            </button>
+            <button id="tabCardBtn" onclick="switchCartStep('card')" class="py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition truncate px-1">
+              Payment Card
+            </button>
+          </div>
+
+          <!-- STEP 1: BAG ITEMS LIST -->
+          <div id="cartItemsStep" class="flex-1 overflow-y-auto p-4 space-y-2.5"></div>
+
+          <!-- STEP 2: SAVED FOR LATER LIST -->
+          <div id="cartSavedStep" class="hidden flex-1 overflow-y-auto p-4 space-y-2.5"></div>
+
+          <!-- STEP 3: LUXURY PAYMENT CARD & SHIPPING STEP -->
+          <div id="cartPaymentStep" class="hidden flex-1 overflow-y-auto p-4 space-y-4">
+            <div class="relative rounded-2xl p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white shadow-xl border border-slate-700 overflow-hidden">
+              <div class="flex justify-between items-center mb-4">
+                <span class="font-serif-lux italic text-base text-amber-300">y.geye Privé Card</span>
+                <div class="flex items-center gap-2 text-base text-slate-300">
+                  <i class="fa-brands fa-cc-visa"></i>
+                  <i class="fa-brands fa-cc-mastercard"></i>
+                </div>
+              </div>
+              <div id="cardPreviewNumber" class="font-mono text-sm tracking-[0.18em] text-amber-100 mb-4">
+                •••• •••• •••• 4242
+              </div>
+              <div class="flex justify-between items-end text-[10px] uppercase tracking-wider text-slate-400">
+                <div>
+                  <div class="text-[8px] text-slate-500">Cardholder</div>
+                  <div id="cardPreviewName" class="text-white font-semibold">VIP MEMBER</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-[8px] text-slate-500">Expires</div>
+                  <div id="cardPreviewExpiry" class="text-white font-mono">08/29</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <button type="button" id="payMethodCard" onclick="selectPayMethod('card')" class="p-2.5 rounded-xl border-2 border-slate-900 bg-slate-900/5 font-bold text-slate-900 flex items-center justify-center gap-1.5">
+                <i class="fa-regular fa-credit-card text-amber-600"></i> Card / UPI
+              </button>
+              <button type="button" id="payMethodVIP" onclick="selectPayMethod('vip')" class="p-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-crown text-amber-500"></i> VIP Free / COD
+              </button>
+            </div>
+
+            <div class="space-y-2.5 text-xs">
+              <div>
+                <label class="block text-slate-600 font-semibold mb-1">Full Name / Recipient</label>
+                <input id="custName" type="text" oninput="updateCardPreview()" placeholder="e.g. Abubakar Siddique" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-slate-600 font-semibold mb-1">Delivery Address & PIN</label>
+                <input id="custAddress" type="text" placeholder="Flat / Street, City, PIN" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+
+              <div id="cardFieldsBox" class="space-y-2.5 pt-2 border-t border-slate-100">
+                <div>
+                  <label class="block text-slate-600 font-semibold mb-1">Card Number</label>
+                  <input id="cardNumberInput" type="text" inputmode="numeric" maxlength="19" oninput="formatCardNumber(this)" placeholder="4532 •••• •••• 8891" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label class="block text-slate-600 font-semibold mb-1">Expiry (MM/YY)</label>
+                    <input id="cardExpiryInput" type="text" maxlength="5" oninput="updateCardPreview()" placeholder="08/29" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                  </div>
+                  <div>
+                    <label class="block text-slate-600 font-semibold mb-1">CVV</label>
+                    <input id="cardCvcInput" type="password" inputmode="numeric" maxlength="4" placeholder="•••" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Drawer Footer -->
+          <div class="p-4 border-t border-slate-200 bg-slate-50">
+            <div class="flex justify-between items-center mb-3">
+              <div>
+                <span class="text-xs font-medium text-slate-500 block">Subtotal (INR)</span>
+                <span class="text-[10px] text-emerald-600 font-semibold">FREE VIP Delivery Included</span>
+              </div>
+              <span id="cartTotal" class="text-xl font-extrabold text-slate-900">₹0</span>
+            </div>
+            <button id="cartPrimaryActionBtn" onclick="handleCartPrimaryAction()" class="w-full py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold rounded-xl transition shadow-md flex items-center justify-center gap-2 text-xs sm:text-sm">
+              <span id="cartPrimaryActionText">Proceed to Buy (Card / COD)</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Sticky Bottom Navigation Bar -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-200 px-3 py-1.5 flex items-center justify-around text-[10px] font-bold text-slate-600 shadow-lg">
+      <button onclick="setCategory('All'); window.scrollTo({top:0,behavior:'smooth'})" class="flex flex-col items-center gap-0.5 text-slate-900">
+        <i class="fa-solid fa-house text-sm"></i>
+        <span>Home</span>
+      </button>
+      <button onclick="setCategory('Free Gifts')" class="flex flex-col items-center gap-0.5 text-emerald-700">
+        <i class="fa-solid fa-gift text-sm"></i>
+        <span>Free Gifts</span>
+      </button>
+      <button onclick="openSavedDrawer()" class="relative flex flex-col items-center gap-0.5">
+        <i class="fa-solid fa-bookmark text-sm text-amber-600"></i>
+        <span>Saved</span>
+        <span id="mobileSavedBadge" class="absolute -top-1 right-0 bg-slate-900 text-white text-[8px] font-bold rounded-full px-1">0</span>
+      </button>
+      <button onclick="toggleCart(true)" class="relative flex flex-col items-center gap-0.5">
+        <i class="fa-solid fa-cart-shopping text-sm text-slate-900"></i>
+        <span>Cart</span>
+        <span id="mobileBagBadge" class="absolute -top-1 right-0 bg-amber-400 text-slate-950 text-[8px] font-extrabold rounded-full px-1">0</span>
+      </button>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="bg-[#131921] text-slate-400 py-8 px-4 mt-6">
+      <div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-xs">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-serif-lux font-bold text-lg">y.</div>
+          <span class="font-serif-lux text-xl text-white font-bold">y.geye</span>
+          <span class="text-[11px] text-slate-500">• Private INR (₹) Marketplace</span>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-2">
+          <button onclick="copyShareUrl()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] transition">
+            <i class="fa-solid fa-link text-amber-400 mr-1"></i> Copy Invite Link (<code class="text-amber-300">?key=vip2026</code>)
+          </button>
+          <a href="/admin.html" class="px-3 py-1.5 rounded-lg bg-amber-400/10 text-amber-300 border border-amber-400/20 text-[11px]">
+            Admin Studio →
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const SECRET_KEY = 'vip2026';
+    const STORAGE_VERSION = 'ygeye_amazon_inr_v4';
+    const FALLBACK_IMG = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80';
+
+    let cart = [];
+    let savedForLater = [];
+    let activeCategory = 'All';
+    let currentCartStep = 'bag';
+    let selectedPaymentMethod = 'card';
+    let currentSearchQuery = '';
+    let mobileGridCols = 2; // 2 or 3 columns on mobile
+    let currentReelIdx = 0;
+    let reelAutoTimer = null;
+    let isReelPaused = false;
+
+    const heroVideoReels = [
+      {
+        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        backdrop: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1400&auto=format&fit=crop&q=80',
+        tag: 'LIVE REEL • 100% Authentic Craftsmanship',
+        title: 'The Art of <span class="italic text-amber-300 font-normal">y.geye</span> Luxury',
+        desc: 'Every timepiece and object is hand-inspected for precision, material purity, and timeless finish.',
+        prodId: 'prod_1',
+        prodName: 'Obsidian Chrono 41mm',
+        prodPrice: '₹28,500',
+        prodImg: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&auto=format&fit=crop&q=80'
+      },
+      {
+        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+        backdrop: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1400&auto=format&fit=crop&q=80',
+        tag: 'LIVE REEL • Bespoke Italian Leather & Style',
+        title: 'Curated <span class="italic text-amber-300 font-normal">Atelier</span> Finishes',
+        desc: 'Full-grain vachetta leather, solid brass hardware, and hand-stitched luxury accessories.',
+        prodId: 'prod_3',
+        prodName: 'Vachetta Leather Backpack',
+        prodPrice: '₹15,499',
+        prodImg: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&auto=format&fit=crop&q=80'
+      },
+      {
+        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+        backdrop: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=1400&auto=format&fit=crop&q=80',
+        tag: 'LIVE REEL • Complimentary VIP Packaging',
+        title: 'White-Glove <span class="italic text-amber-300 font-normal">VIP</span> Unboxing',
+        desc: 'Delivered across India with signature y.geye gift wrapping and ₹0 complimentary member gifts.',
+        prodId: 'prod_free_1',
+        prodName: 'Monogram Leather Cardholder',
+        prodPrice: '🎁 FREE GIFT',
+        prodImg: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=300&auto=format&fit=crop&q=80'
+      }
+    ];
+
+    function startReelCycle() {
+      switchHeroVideo(0, false);
+    }
+
+    function switchHeroVideo(idx, manualClick = false) {
+      currentReelIdx = idx;
+      const reel = heroVideoReels[idx];
+      if (!reel) return;
+
+      const backdrop = document.getElementById('heroAnimatedBackdrop');
+      if (backdrop) backdrop.src = reel.backdrop;
+
+      const vid = document.getElementById('heroShowcaseVideo');
+      if (vid) {
+        vid.muted = true;
+        vid.src = reel.src;
+        vid.load();
+        const playPromise = vid.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
+      }
+
+      document.getElementById('videoStoryTag').textContent = reel.tag;
+      document.getElementById('videoStoryTitle').innerHTML = reel.title;
+      document.getElementById('videoStoryDesc').textContent = reel.desc;
+
+      // Update floating product card inside video reel
+      const floatCard = document.getElementById('reelFloatingProduct');
+      if (floatCard) {
+        floatCard.setAttribute('onclick', `openQuickView('${reel.prodId}')`);
+        document.getElementById('reelFloatImg').src = reel.prodImg;
+        document.getElementById('reelFloatName').textContent = reel.prodName;
+        document.getElementById('reelFloatPrice').textContent = reel.prodPrice;
+      }
+
+      // Update story progress bars at top of reel
+      [0, 1, 2].forEach(i => {
+        const bar = document.getElementById('reelBar' + i);
+        if (bar) {
+          bar.className = 'h-full bg-amber-400';
+          if (i < idx) {
+            bar.style.width = '100%';
+          } else if (i === idx) {
+            bar.style.width = '0%';
+            void bar.offsetWidth; // trigger reflow
+            if (!isReelPaused) bar.classList.add('reel-progress-active');
+          } else {
+            bar.style.width = '0%';
+          }
+        }
+
+        const btn = document.getElementById('vidTab' + i);
+        if (!btn) return;
+        if (i === idx) {
+          btn.className = 'vid-pill px-2.5 py-1.5 rounded-xl bg-white/20 text-white border border-amber-400 text-[9px] sm:text-[10px] font-bold backdrop-blur-md transition';
+        } else {
+          btn.className = 'vid-pill px-2.5 py-1.5 rounded-xl bg-black/40 hover:bg-white/15 text-slate-200 border border-white/15 text-[9px] sm:text-[10px] font-semibold backdrop-blur-md transition';
+        }
+      });
+
+      if (reelAutoTimer) clearTimeout(reelAutoTimer);
+      if (!isReelPaused) {
+        reelAutoTimer = setTimeout(() => {
+          const nextIdx = (currentReelIdx + 1) % heroVideoReels.length;
+          switchHeroVideo(nextIdx, false);
+        }, 6000);
+      }
+    }
+
+    function toggleVideoPlay() {
+      const vid = document.getElementById('heroShowcaseVideo');
+      const btn = document.getElementById('videoPlayBtn');
+      isReelPaused = !isReelPaused;
+      if (isReelPaused) {
+        if (vid) vid.pause();
+        if (reelAutoTimer) clearTimeout(reelAutoTimer);
+        const activeBar = document.getElementById('reelBar' + currentReelIdx);
+        if (activeBar) activeBar.classList.remove('reel-progress-active');
+        btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        showPopup('Reel Paused', 'Tap play anytime to resume the quality showcase reel.', 'info');
+      } else {
+        if (vid) vid.play().catch(() => {});
+        btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        switchHeroVideo(currentReelIdx, false);
+      }
+    }
+
+    function formatINR(amount) {
+      const num = Number(amount) || 0;
+      if (num === 0) return '₹0';
+      return '₹' + num.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+    }
+
+    // 16 Curated Compact Luxury & Free VIP Products in INR (₹)
+    const defaultProducts = [
+      {
+        id: 'prod_free_1',
+        name: 'y.geye Monogram Leather Cardholder',
+        price: 0,
+        mrp: 2499,
+        rating: '4.9',
+        isFree: true,
+        badge: 'FREE VIP GIFT',
+        category: 'Free Gifts',
+        description: 'Full-grain Italian calfskin cardholder embossed with the y.geye crest.',
+        image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_free_2',
+        name: 'Oud & Amber Travel Elixir (15ml)',
+        price: 0,
+        mrp: 1999,
+        rating: '4.8',
+        isFree: true,
+        badge: 'FREE SAMPLE',
+        category: 'Free Gifts',
+        description: 'Rare smoky oud and Madagascar vanilla pocket atomizer.',
+        image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_free_3',
+        name: 'Velvet Watch & Jewelry Travel Roll',
+        price: 0,
+        mrp: 1799,
+        rating: '4.9',
+        isFree: true,
+        badge: 'FREE PERK',
+        category: 'Free Gifts',
+        description: 'Plush emerald suede pouch to protect timepieces on the go.',
+        image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_free_4',
+        name: 'y.geye Silk Cleaning Cloth & Care Kit',
+        price: 0,
+        mrp: 999,
+        rating: '4.7',
+        isFree: true,
+        badge: 'FREE GIFT',
+        category: 'Free Gifts',
+        description: 'Micro-weave optical and watch crystal polishing kit.',
+        image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_1',
+        name: 'Obsidian Chrono Automatic 41mm Watch',
+        price: 28500,
+        mrp: 42000,
+        rating: '4.9',
+        isFree: false,
+        badge: '32% OFF',
+        category: 'Timepieces',
+        description: 'Brushed gunmetal steel case with sapphire exhibition back.',
+        image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_2',
+        name: 'Beoplay Studio ANC Over-Ear Headphones',
+        price: 21999,
+        mrp: 34990,
+        rating: '4.8',
+        isFree: false,
+        badge: '37% OFF',
+        category: 'Electronics',
+        description: 'Lambskin ear cushions and 45-hour spatial acoustic clarity.',
+        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_3',
+        name: 'Vachetta Minimalist Leather Backpack',
+        price: 15499,
+        mrp: 22999,
+        rating: '4.8',
+        isFree: false,
+        badge: 'DEAL',
+        category: 'Accessories',
+        description: 'Structured leather pack with 16" laptop sleeve and brass zips.',
+        image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_4',
+        name: 'Kyoto Matte Ceramic Pour-Over Set',
+        price: 5499,
+        mrp: 7999,
+        rating: '4.7',
+        isFree: false,
+        badge: '31% OFF',
+        category: 'Lifestyle',
+        description: 'Black stoneware dripper paired with borosilicate thermal server.',
+        image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_5',
+        name: 'Santal Noir Eau de Parfum (100ml)',
+        price: 12900,
+        mrp: 16500,
+        rating: '4.9',
+        isFree: false,
+        badge: 'BESTSELLER',
+        category: 'Fragrances',
+        description: 'Australian sandalwood, crushed cardamom, and dry cedarwood.',
+        image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_6',
+        name: 'Titanium Aviator Polarized Sunglasses',
+        price: 11499,
+        mrp: 15999,
+        rating: '4.8',
+        isFree: false,
+        badge: '28% OFF',
+        category: 'Accessories',
+        description: 'Japanese beta-titanium frames with emerald UV400 mineral lenses.',
+        image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_7',
+        name: 'MagSafe Solid Walnut & Brass Dock',
+        price: 9499,
+        mrp: 13999,
+        rating: '4.8',
+        isFree: false,
+        badge: '32% OFF',
+        category: 'Electronics',
+        description: 'Weighted American walnut base with solid brass 3-in-1 fast charger.',
+        image: 'https://images.unsplash.com/photo-1615526675159-e248c3021d3f?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_8',
+        name: 'Geneva Rose-Gold Dress Chronograph',
+        price: 24500,
+        mrp: 32000,
+        rating: '4.9',
+        isFree: false,
+        badge: 'LIMITED',
+        category: 'Timepieces',
+        description: 'Sunray champagne dial with espresso leather deployment strap.',
+        image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_9',
+        name: 'Nordic Brushed Espresso Machine',
+        price: 34900,
+        mrp: 45000,
+        rating: '4.9',
+        isFree: false,
+        badge: '22% OFF',
+        category: 'Lifestyle',
+        description: '19-Bar stainless steel espresso maker with commercial steam wand.',
+        image: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_10',
+        name: 'Emerald Dial Diver Automatic 200M',
+        price: 31999,
+        mrp: 44000,
+        rating: '4.9',
+        isFree: false,
+        badge: '27% OFF',
+        category: 'Timepieces',
+        description: 'Ceramic unidirectional bezel with luminous sapphire crystal face.',
+        image: 'https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_11',
+        name: 'Acqua Di Bergamot Cologne (100ml)',
+        price: 9999,
+        mrp: 13500,
+        rating: '4.7',
+        isFree: false,
+        badge: '26% OFF',
+        category: 'Fragrances',
+        description: 'Calabrian bergamot, neroli blossom, and crisp sea salt accord.',
+        image: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=500&auto=format&fit=crop&q=80'
+      },
+      {
+        id: 'prod_12',
+        name: 'Carbon Fiber MagSafe Power Bank 10K',
+        price: 6499,
+        mrp: 8999,
+        rating: '4.8',
+        isFree: false,
+        badge: 'FAST CHARGE',
+        category: 'Electronics',
+        description: 'Ultra-slim forged carbon magnetic wireless battery pack.',
+        image: 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=500&auto=format&fit=crop&q=80'
+      }
+    ];
+
+    function showPopup(title, message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const icons = {
+        success: '<i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>',
+        error: '<i class="fa-solid fa-circle-exclamation text-rose-400 text-base"></i>',
+        info: '<i class="fa-solid fa-bookmark text-amber-400 text-base"></i>'
+      };
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto bg-slate-950/95 backdrop-blur-md text-white border border-slate-800 px-3.5 py-2.5 rounded-xl shadow-2xl flex items-start gap-2.5 animate-slide-up transition-all duration-300';
+      toast.innerHTML = `
+        <div class="mt-0.5">${icons[type] || icons.info}</div>
+        <div class="flex-1 min-w-0">
+          <h4 class="font-bold text-[11px] text-white">${title}</h4>
+          <p class="text-[10px] text-slate-300 mt-0.5 leading-snug">${message}</p>
+        </div>
+        <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-white text-xs"><i class="fa-solid fa-xmark"></i></button>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 2800);
+    }
+
+    function getProducts() {
+      const ver = localStorage.getItem('store_version');
+      const stored = localStorage.getItem('store_products');
+      if (ver !== STORAGE_VERSION || !stored) {
+        localStorage.setItem('store_products', JSON.stringify(defaultProducts));
+        localStorage.setItem('store_version', STORAGE_VERSION);
+        return defaultProducts;
+      }
+      try {
+        const parsed = JSON.parse(stored);
+        return parsed.map(p => {
+          if (p.name && p.name.includes('MagSafe') && p.image.includes('1586816879360')) {
+            p.image = 'https://images.unsplash.com/photo-1615526675159-e248c3021d3f?w=500&auto=format&fit=crop&q=80';
+          }
+          return p;
+        });
+      } catch(e) { return defaultProducts; }
+    }
+
+    function loadSavedAndCart() {
+      try {
+        savedForLater = JSON.parse(localStorage.getItem('ygeye_saved_items') || '[]');
+        cart = JSON.parse(localStorage.getItem('ygeye_cart_items') || '[]');
+      } catch (e) {
+        savedForLater = [];
+        cart = [];
+      }
+    }
+
+    function persistCartAndSaved() {
+      localStorage.setItem('ygeye_saved_items', JSON.stringify(savedForLater));
+      localStorage.setItem('ygeye_cart_items', JSON.stringify(cart));
+    }
+
+    function checkAccess() {
+      loadSavedAndCart();
+      const params = new URLSearchParams(window.location.search);
+      const urlKey = params.get('key');
+      const savedKey = localStorage.getItem('store_vip_key');
+
+      if (urlKey === SECRET_KEY || savedKey === SECRET_KEY) {
+        localStorage.setItem('store_vip_key', SECRET_KEY);
+        document.getElementById('gateModal').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        startReelCycle();
+        renderBentoQuadrants();
+        renderProducts();
+        updateCartUI();
+      } else {
+        document.getElementById('gateModal').classList.remove('hidden');
+        document.getElementById('mainApp').classList.add('hidden');
+      }
+    }
+
+    function unlockWithKey() {
+      const val = document.getElementById('gateKeyInput').value.trim();
+      if (val === SECRET_KEY) {
+        localStorage.setItem('store_vip_key', SECRET_KEY);
+        document.getElementById('gateModal').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        startReelCycle();
+        renderBentoQuadrants();
+        renderProducts();
+        updateCartUI();
+        showPopup('Welcome to y.geye', 'VIP invitation verified.', 'success');
+      } else {
+        showPopup('Access Denied', 'Invalid VIP passkey. Use "vip2026".', 'error');
+      }
+    }
+
+    // Render Amazon-style 2x2 Quadrant Cards at the top
+    function renderBentoQuadrants() {
+      const all = getProducts();
+      const freeList = all.filter(p => Number(p.price) === 0 || p.isFree).slice(0, 4);
+      const flashList = all.filter(p => Number(p.price) > 0 && (p.category === 'Electronics' || p.category === 'Lifestyle')).slice(0, 4);
+      const watchList = all.filter(p => p.category === 'Timepieces' || p.category === 'Accessories').slice(0, 4);
+
+      const renderMiniQuad = (items, isDarkBg = false) => items.map(item => `
+        <div onclick="openQuickView('${item.id}')" class="group cursor-pointer bg-white rounded-lg p-1.5 border border-slate-100 flex flex-col justify-between hover:shadow-md transition">
+          <div class="aspect-square rounded overflow-hidden bg-slate-50 relative">
+            <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+            <span class="absolute bottom-1 left-1 ${Number(item.price) === 0 ? 'bg-emerald-600' : 'bg-[#CC0C39]'} text-white text-[8px] font-extrabold px-1.5 py-0.2 rounded">
+              ${Number(item.price) === 0 ? 'FREE' : formatINR(item.price)}
+            </span>
+          </div>
+          <p class="text-[9px] sm:text-[10px] font-medium text-slate-800 truncate mt-1">${item.name}</p>
+        </div>
+      `).join('');
+
+      document.getElementById('quadFreeGifts').innerHTML = renderMiniQuad(freeList);
+      document.getElementById('quadFlashDeals').innerHTML = renderMiniQuad(flashList, true);
+      document.getElementById('quadWatches').innerHTML = renderMiniQuad(watchList);
+    }
+
+    function setGridDensity(cols) {
+      mobileGridCols = cols;
+      const grid = document.getElementById('productGrid');
+      const b2 = document.getElementById('grid2Btn');
+      const b3 = document.getElementById('grid3Btn');
+      if (cols === 3) {
+        grid.className = 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1.5 sm:gap-3';
+        b3.className = 'px-2 py-1 rounded bg-white text-slate-900 shadow-sm transition';
+        b2.className = 'px-2 py-1 rounded text-slate-500 hover:text-slate-900 transition';
+      } else {
+        grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3';
+        b2.className = 'px-2 py-1 rounded bg-white text-slate-900 shadow-sm transition';
+        b3.className = 'px-2 py-1 rounded text-slate-500 hover:text-slate-900 transition';
+      }
+      renderProducts();
+    }
+
+    function syncSearch(val) {
+      currentSearchQuery = val;
+      renderProducts();
+    }
+
+    function setCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.dataset.cat === cat) {
+          btn.className = 'cat-btn whitespace-nowrap px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-bold transition flex-shrink-0';
+        } else {
+          btn.className = 'cat-btn whitespace-nowrap px-2.5 py-1 rounded hover:bg-white/10 text-white transition flex-shrink-0';
+        }
+      });
+      document.getElementById('catalogHeading').textContent =
+        cat === 'All' ? 'All Featured Products' : (cat === 'Saved' ? '🔖 Saved for Later' : cat);
+
+      // Hide top bento showcase if filtering a specific category so user immediately sees dense products
+      const bento = document.getElementById('bentoShowcaseSection');
+      if (bento) {
+        if (cat === 'All' && !currentSearchQuery) bento.classList.remove('hidden');
+        else bento.classList.add('hidden');
+      }
+      renderProducts();
+    }
+
+    function toggleSaveForLater(prodId) {
+      const prod = getProducts().find(p => p.id === prodId);
+      if (!prod) return;
+      const exists = savedForLater.some(s => s.id === prodId);
+      if (exists) {
+        savedForLater = savedForLater.filter(s => s.id !== prodId);
+        showPopup('Removed from Saved', `${prod.name} removed.`, 'info');
+      } else {
+        savedForLater.unshift(prod);
+        showPopup('Saved for Later', `${prod.name} bookmarked!`, 'info');
+      }
+      persistCartAndSaved();
+      renderProducts();
+      updateCartUI();
+    }
+
+    function moveCartToSaved(prodId) {
+      const item = cart.find(c => c.id === prodId);
+      if (!item) return;
+      cart = cart.filter(c => c.id !== prodId);
+      if (!savedForLater.some(s => s.id === prodId)) {
+        const { qty, ...cleanProd } = item;
+        savedForLater.unshift(cleanProd);
+      }
+      persistCartAndSaved();
+      renderProducts();
+      updateCartUI();
+      showPopup('Saved for Later', `${item.name} moved to Saved.`, 'info');
+    }
+
+    function moveSavedToCart(prodId) {
+      const item = savedForLater.find(s => s.id === prodId);
+      if (!item) return;
+      savedForLater = savedForLater.filter(s => s.id !== prodId);
+      const existInCart = cart.find(c => c.id === prodId);
+      if (existInCart) existInCart.qty++;
+      else cart.push({ ...item, qty: 1 });
+      persistCartAndSaved();
+      renderProducts();
+      updateCartUI();
+      showPopup('Moved to Bag', `${item.name} added to your bag.`, 'success');
+    }
+
+    function openSavedDrawer() {
+      toggleCart(true);
+      switchCartStep('saved');
+    }
+
+    function renderProducts() {
+      let prods = [...getProducts()];
+      const q = (currentSearchQuery || '').toLowerCase().trim();
+      const sort = document.getElementById('sortSelect')?.value || 'featured';
+
+      const bento = document.getElementById('bentoShowcaseSection');
+      if (bento) {
+        if (activeCategory === 'All' && !q) bento.classList.remove('hidden');
+        else bento.classList.add('hidden');
+      }
+
+      if (activeCategory !== 'All') {
+        if (activeCategory === 'Free Gifts') {
+          prods = prods.filter(p => Number(p.price) === 0 || p.isFree || p.category === 'Free Gifts');
+        } else if (activeCategory === 'Saved') {
+          const savedIds = new Set(savedForLater.map(s => s.id));
+          prods = prods.filter(p => savedIds.has(p.id));
+        } else {
+          prods = prods.filter(p => p.category === activeCategory);
+        }
+      }
+
+      if (q) {
+        prods = prods.filter(p =>
+          p.name.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q)
+        );
+      }
+
+      if (sort === 'free-first') prods.sort((a, b) => Number(a.price) - Number(b.price));
+      if (sort === 'price-asc') prods.sort((a, b) => Number(a.price) - Number(b.price));
+      if (sort === 'price-desc') prods.sort((a, b) => Number(b.price) - Number(a.price));
+
+      document.getElementById('totalVisibleBadge').textContent = `${prods.length} items`;
+
+      const grid = document.getElementById('productGrid');
+      if (prods.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 px-4 bg-white rounded-2xl border border-slate-200">
+            <i class="fa-solid fa-box-open text-2xl text-slate-300 mb-2"></i>
+            <h3 class="font-bold text-xs sm:text-sm text-slate-800">No items found</h3>
+            <button onclick="setCategory('All')" class="mt-3 px-3.5 py-1.5 rounded-lg bg-slate-900 text-white text-[11px] font-bold">Show All Products</button>
+          </div>
+        `;
+        return;
+      }
+
+      const savedIds = new Set(savedForLater.map(s => s.id));
+      const isUltraCompact = mobileGridCols === 3;
+
+      grid.innerHTML = prods.map(p => {
+        const isFree = Number(p.price) === 0 || p.isFree;
+        const isSaved = savedIds.has(p.id);
+        const mrpVal = p.mrp || (isFree ? 1999 : Math.round(Number(p.price) * 1.3));
+
+        return `
+          <div class="group bg-white rounded-xl border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <!-- Compact Square Image with Deal Badge & Top-Right Save Bookmark -->
+              <div class="aspect-square bg-slate-50 relative overflow-hidden cursor-pointer" onclick="openQuickView('${p.id}')">
+                <img
+                  src="${p.image}"
+                  alt="${p.name}"
+                  onerror="this.onerror=null;this.src='${FALLBACK_IMG}';"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <span class="absolute top-1.5 left-1.5 ${isFree ? 'bg-emerald-600' : 'bg-[#CC0C39]'} text-white font-extrabold text-[8px] sm:text-[9px] uppercase px-1.5 py-0.5 rounded shadow-sm">
+                  ${isFree ? '🎁 FREE' : (p.badge || 'DEAL')}
+                </span>
+                <button
+                  onclick="event.stopPropagation(); toggleSaveForLater('${p.id}')"
+                  class="absolute top-1.5 right-1.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full ${isSaved ? 'bg-amber-400 text-slate-950' : 'bg-white/90 text-slate-700 hover:bg-slate-900 hover:text-white'} flex items-center justify-center shadow transition"
+                  title="Save for Later"
+                >
+                  <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark text-[10px]"></i>
+                </button>
+              </div>
+
+              <!-- Compact Amazon-style Info Block -->
+              <div class="p-2 sm:p-2.5">
+                <div class="flex items-center justify-between text-[9px] text-slate-400 font-semibold mb-0.5">
+                  <span class="truncate">${p.category}</span>
+                  <span class="text-amber-500 flex items-center gap-0.5 flex-shrink-0"><i class="fa-solid fa-star text-[8px]"></i> ${p.rating || '4.8'}</span>
+                </div>
+                <h3 onclick="openQuickView('${p.id}')" class="font-semibold ${isUltraCompact ? 'text-[10px]' : 'text-[11px] sm:text-xs'} text-slate-900 line-clamp-2 leading-snug cursor-pointer hover:text-amber-700">
+                  ${p.name}
+                </h3>
+
+                <!-- Price + Strikethrough MRP -->
+                <div class="mt-1 flex items-baseline gap-1 flex-wrap">
+                  <span class="${isUltraCompact ? 'text-xs' : 'text-sm sm:text-base'} font-extrabold ${isFree ? 'text-emerald-600' : 'text-slate-900'}">
+                    ${isFree ? 'FREE' : formatINR(p.price)}
+                  </span>
+                  <span class="text-[9px] text-slate-400 line-through">${formatINR(mrpVal)}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Compact Bottom Action Row: Add to Bag + Save for Later -->
+            <div class="px-2 pb-2 sm:px-2.5 sm:pb-2.5 pt-1 flex items-center gap-1">
+              <button
+                onclick="addToCart('${p.id}')"
+                class="flex-1 py-1.5 px-2 ${isFree ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-[#FFD814] hover:bg-[#F7CA00] text-slate-950'} rounded-lg ${isUltraCompact ? 'text-[9px]' : 'text-[10px] sm:text-[11px]'} font-extrabold transition active:scale-95 text-center truncate shadow-sm"
+              >
+                ${isFree ? 'Claim Free' : 'Add to Bag'}
+              </button>
+              ${!isUltraCompact ? `
+              <button
+                onclick="toggleSaveForLater('${p.id}')"
+                class="px-2 py-1.5 rounded-lg border ${isSaved ? 'border-amber-400 bg-amber-50 text-amber-800' : 'border-slate-200 text-slate-600 hover:bg-slate-50'} text-[10px] font-semibold transition flex-shrink-0"
+                title="Save for Later"
+              >
+                <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
+              </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openQuickView(prodId) {
+      const p = getProducts().find(x => x.id === prodId);
+      if (!p) return;
+      const isFree = Number(p.price) === 0 || p.isFree;
+      const isSaved = savedForLater.some(s => s.id === p.id);
+      const modal = document.getElementById('quickViewModal');
+      const content = document.getElementById('quickViewContent');
+      content.innerHTML = `
+        <div class="bg-slate-100 relative h-60 sm:h-auto min-h-[220px]">
+          <img src="${p.image}" alt="${p.name}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';" class="w-full h-full object-cover" />
+          <span class="absolute top-3 left-3 bg-slate-950/80 text-amber-300 text-[10px] font-bold uppercase px-2.5 py-1 rounded-full">${p.category}</span>
+          <button onclick="closeQuickView()" class="sm:hidden absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 text-slate-900 flex items-center justify-center font-bold shadow">✕</button>
+        </div>
+        <div class="p-5 sm:p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-amber-600">y.geye Prime VIP</span>
+              <button onclick="closeQuickView()" class="hidden sm:flex w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 items-center justify-center text-xs">✕</button>
+            </div>
+            <h3 class="font-bold text-lg sm:text-xl text-slate-900 mt-1">${p.name}</h3>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-xl font-extrabold ${isFree ? 'text-emerald-600' : 'text-slate-900'}">
+                ${isFree ? '🎁 FREE (VIP Complimentary)' : formatINR(p.price)}
+              </span>
+              <span class="text-xs text-slate-400 line-through">${formatINR(p.mrp || 2499)}</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed mt-3">${p.description}</p>
+          </div>
+          <div class="mt-5 grid grid-cols-2 gap-2">
+            <button onclick="toggleSaveForLater('${p.id}'); closeQuickView();" class="py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5">
+              <i class="${isSaved ? 'fa-solid text-amber-500' : 'fa-regular'} fa-bookmark"></i>
+              <span>${isSaved ? 'Saved' : 'Save for Later'}</span>
+            </button>
+            <button onclick="addToCart('${p.id}'); closeQuickView();" class="py-2.5 px-3 bg-[#FFD814] hover:bg-[#F7CA00] text-slate-950 font-extrabold rounded-xl text-xs">
+              ${isFree ? 'Claim Free Gift' : 'Add to Bag'}
+            </button>
+          </div>
+        </div>
+      `;
+      modal.classList.remove('hidden');
+    }
+
+    function closeQuickView() {
+      document.getElementById('quickViewModal').classList.add('hidden');
+    }
+
+    function addToCart(prodId) {
+      const prod = getProducts().find(p => p.id === prodId);
+      if (!prod) return;
+      const exist = cart.find(c => c.id === prodId);
+      if (exist) exist.qty++;
+      else cart.push({ ...prod, qty: 1 });
+      persistCartAndSaved();
+      updateCartUI();
+      const isFree = Number(prod.price) === 0 || prod.isFree;
+      showPopup(
+        isFree ? 'Free VIP Gift Added!' : 'Added to Bag',
+        `${prod.name} (${isFree ? 'FREE' : formatINR(prod.price)})`,
+        'success'
+      );
+    }
+
+    function changeQty(prodId, delta) {
+      const item = cart.find(c => c.id === prodId);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(c => c.id !== prodId);
+      }
+      persistCartAndSaved();
+      updateCartUI();
+    }
+
+    function switchCartStep(step) {
+      currentCartStep = step;
+      const bagStep = document.getElementById('cartItemsStep');
+      const savedStep = document.getElementById('cartSavedStep');
+      const payStep = document.getElementById('cartPaymentStep');
+      const tabBag = document.getElementById('tabBagBtn');
+      const tabSaved = document.getElementById('tabSavedBtn');
+      const tabCard = document.getElementById('tabCardBtn');
+      const btnText = document.getElementById('cartPrimaryActionText');
+
+      bagStep.classList.add('hidden');
+      savedStep.classList.add('hidden');
+      payStep.classList.add('hidden');
+
+      tabBag.className = 'py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition truncate px-1';
+      tabSaved.className = 'py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition truncate px-1';
+      tabCard.className = 'py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition truncate px-1';
+
+      if (step === 'bag') {
+        bagStep.classList.remove('hidden');
+        tabBag.className = 'py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition truncate px-1';
+        btnText.textContent = 'Proceed to Buy (Card / COD)';
+      } else if (step === 'saved') {
+        savedStep.classList.remove('hidden');
+        tabSaved.className = 'py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition truncate px-1';
+        btnText.textContent = 'Back to Active Bag';
+      } else {
+        if (cart.length === 0) {
+          bagStep.classList.remove('hidden');
+          tabBag.className = 'py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition truncate px-1';
+          currentCartStep = 'bag';
+          showPopup('Bag is Empty', 'Add items to your bag before checkout.', 'error');
+          return;
+        }
+        payStep.classList.remove('hidden');
+        tabCard.className = 'py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition truncate px-1';
+        const total = cart.reduce((s, i) => s + i.qty * Number(i.price), 0);
+        btnText.textContent = total === 0 ? 'Complete Free VIP Order' : `Pay ${formatINR(total)} & Place Order`;
+      }
+    }
+
+    function selectPayMethod(method) {
+      selectedPaymentMethod = method;
+      const cardBtn = document.getElementById('payMethodCard');
+      const vipBtn = document.getElementById('payMethodVIP');
+      const cardBox = document.getElementById('cardFieldsBox');
+      if (method === 'card') {
+        cardBtn.className = 'p-2.5 rounded-xl border-2 border-slate-900 bg-slate-900/5 font-bold text-slate-900 flex items-center justify-center gap-1.5';
+        vipBtn.className = 'p-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold flex items-center justify-center gap-1.5';
+        cardBox.classList.remove('hidden');
+      } else {
+        vipBtn.className = 'p-2.5 rounded-xl border-2 border-amber-500 bg-amber-50/50 font-bold text-slate-900 flex items-center justify-center gap-1.5';
+        cardBtn.className = 'p-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold flex items-center justify-center gap-1.5';
+        cardBox.classList.add('hidden');
+      }
+    }
+
+    function formatCardNumber(input) {
+      let digits = input.value.replace(/\D/g, '').substring(0, 16);
+      input.value = digits.match(/.{1,4}/g)?.join(' ') || '';
+      updateCardPreview();
+    }
+
+    function updateCardPreview() {
+      document.getElementById('cardPreviewName').textContent = (document.getElementById('custName')?.value || 'VIP MEMBER').toUpperCase();
+      document.getElementById('cardPreviewNumber').textContent = document.getElementById('cardNumberInput')?.value || '•••• •••• •••• 4242';
+      document.getElementById('cardPreviewExpiry').textContent = document.getElementById('cardExpiryInput')?.value || '08/29';
+    }
+
+    function updateCartUI() {
+      const count = cart.reduce((s, i) => s + i.qty, 0);
+      const savedCount = savedForLater.length;
+
+      document.getElementById('cartCount').textContent = count;
+      document.getElementById('drawerBagCount').textContent = count;
+      document.getElementById('drawerSavedCount').textContent = savedCount;
+      document.getElementById('savedHeaderCount').textContent = savedCount;
+      document.getElementById('savedFilterCount').textContent = savedCount;
+
+      const mobBag = document.getElementById('mobileBagBadge');
+      const mobSaved = document.getElementById('mobileSavedBadge');
+      if (mobBag) mobBag.textContent = count;
+      if (mobSaved) mobSaved.textContent = savedCount;
+
+      const list = document.getElementById('cartItemsStep');
+      if (cart.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-10 text-slate-400">
+            <i class="fa-solid fa-cart-shopping text-2xl text-slate-300 mb-2"></i>
+            <p class="font-bold text-slate-700 text-xs">Your y.geye Cart is empty</p>
+            ${savedCount > 0 ? `<button onclick="switchCartStep('saved')" class="mt-3 px-3.5 py-1.5 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-bold">View ${savedCount} Saved Item(s) →</button>` : ''}
+          </div>`;
+      } else {
+        list.innerHTML = cart.map(item => {
+          const isFree = Number(item.price) === 0 || item.isFree;
+          return `
+            <div class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
+              <img src="${item.image}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';" class="w-14 h-14 rounded-lg object-cover border border-slate-200 flex-shrink-0" />
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-xs text-slate-900 truncate">${item.name}</h4>
+                <div class="text-[11px] font-bold ${isFree ? 'text-emerald-600' : 'text-slate-700'}">
+                  ${isFree ? '🎁 FREE' : formatINR(item.price)}
+                </div>
+                <div class="flex items-center flex-wrap gap-1.5 mt-1.5">
+                  <div class="flex items-center gap-1 bg-white border border-slate-200 rounded-md px-1.5 py-0.5">
+                    <button onclick="changeQty('${item.id}', -1)" class="w-4 h-4 text-xs font-bold">-</button>
+                    <span class="text-[11px] font-bold w-4 text-center">${item.qty}</span>
+                    <button onclick="changeQty('${item.id}', 1)" class="w-4 h-4 text-xs font-bold">+</button>
+                  </div>
+                  <button onclick="moveCartToSaved('${item.id}')" class="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+                    Save for later
+                  </button>
+                </div>
+              </div>
+              <div class="font-extrabold text-xs text-slate-900">
+                ${isFree ? 'FREE' : formatINR(item.qty * item.price)}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const savedContainer = document.getElementById('cartSavedStep');
+      if (savedForLater.length === 0) {
+        savedContainer.innerHTML = `<div class="text-center py-10 text-slate-400 text-xs">No items saved for later yet.</div>`;
+      } else {
+        savedContainer.innerHTML = savedForLater.map(item => {
+          const isFree = Number(item.price) === 0 || item.isFree;
+          return `
+            <div class="flex items-center gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
+              <img src="${item.image}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-xs text-slate-900 truncate">${item.name}</h4>
+                <div class="text-[11px] font-bold ${isFree ? 'text-emerald-600' : 'text-slate-700'}">${isFree ? 'FREE' : formatINR(item.price)}</div>
+                <div class="flex items-center gap-2 mt-1">
+                  <button onclick="moveSavedToCart('${item.id}')" class="px-2.5 py-1 bg-[#FFD814] text-slate-950 rounded-md text-[10px] font-extrabold">Move to Cart</button>
+                  <button onclick="toggleSaveForLater('${item.id}')" class="text-[10px] text-rose-600 font-semibold">Delete</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const total = cart.reduce((s, i) => s + i.qty * Number(i.price), 0);
+      document.getElementById('cartTotal').textContent = total === 0 && cart.length > 0 ? 'FREE (₹0)' : formatINR(total);
+    }
+
+    function toggleCart(show) {
+      const d = document.getElementById('cartDrawer');
+      if (show) {
+        switchCartStep('bag');
+        d.classList.remove('hidden');
+      } else {
+        d.classList.add('hidden');
+      }
+    }
+
+    function handleCartPrimaryAction() {
+      if (currentCartStep === 'saved') { switchCartStep('bag'); return; }
+      if (cart.length === 0) { showPopup('Cart is Empty', 'Add an item first.', 'error'); return; }
+      if (currentCartStep === 'bag') switchCartStep('card');
+      else completeOrderCheckout();
+    }
+
+    function completeOrderCheckout() {
+      const custName = document.getElementById('custName').value.trim() || 'VIP Invitee';
+      const custAddress = document.getElementById('custAddress').value.trim() || 'Private Concierge Dispatch';
+      const cardNum = document.getElementById('cardNumberInput').value.trim();
+
+      if (selectedPaymentMethod === 'card' && cart.some(i => Number(i.price) > 0) && cardNum.length < 4) {
+        showPopup('Card Details Needed', 'Enter card number or choose "VIP Free / COD".', 'error');
+        return;
+      }
+
+      const total = cart.reduce((s, i) => s + i.qty * Number(i.price), 0);
+      const orders = JSON.parse(localStorage.getItem('store_orders') || '[]');
+      const last4 = cardNum.length >= 4 ? cardNum.slice(-4) : 'VIP';
+      const newOrder = {
+        id: 'YGEYE-' + Math.floor(100000 + Math.random() * 900000),
+        customer: custName,
+        address: custAddress,
+        paymentMethod: selectedPaymentMethod === 'card' ? `Card •••• ${last4}` : 'VIP Complimentary / COD',
+        date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        items: cart,
+        total: total,
+        status: 'Confirmed'
+      };
+      orders.unshift(newOrder);
+      localStorage.setItem('store_orders', JSON.stringify(orders));
+
+      document.getElementById('orderSuccessId').textContent = `${newOrder.id} • ${newOrder.paymentMethod}`;
+      document.getElementById('orderSuccessSummary').innerHTML = `
+        <div class="flex justify-between"><span>Recipient:</span><strong>${newOrder.customer}</strong></div>
+        <div class="flex justify-between"><span>Items:</span><strong>${cart.reduce((s, i) => s + i.qty, 0)} pcs</strong></div>
+        <div class="flex justify-between"><span>Total Paid:</span><strong class="text-emerald-600">${total === 0 ? 'FREE (₹0)' : formatINR(total)}</strong></div>
+      `;
+
+      cart = [];
+      persistCartAndSaved();
+      updateCartUI();
+      toggleCart(false);
+      document.getElementById('orderSuccessModal').classList.remove('hidden');
+      showPopup('Order Confirmed!', `Order ${newOrder.id} placed.`, 'success');
+    }
+
+    function closeOrderSuccessModal() {
+      document.getElementById('orderSuccessModal').classList.add('hidden');
+    }
+
+    function copyShareUrl() {
+      const url = window.location.origin + '/?key=vip2026';
+      navigator.clipboard?.writeText(url);
+      showPopup('VIP Link Copied!', url, 'info');
+    }
+
+    checkAccess();
+  </script>
+</body>
+</html>
